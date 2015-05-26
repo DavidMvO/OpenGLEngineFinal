@@ -59,7 +59,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>./Dep/glfw/lib-vc2013;./Dep/fbx/lib;./Dep/aieutilities/AntTweakBar/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;FBXLoader_d.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,37 +86,22 @@
   <ItemGroup>
     <ClCompile Include="Dep\aieutilities\Gizmos_fix.cpp" />
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Scene3D.cpp" />
     <ClCompile Include="Source\BaseCamera.cpp" />
-    <ClCompile Include="Source\DeferredRenderingExample.cpp" />
+    <ClCompile Include="Source\CheckersApplication.cpp" />
+    <ClCompile Include="Source\CheckersBoard.cpp" />
     <ClCompile Include="Source\FlyCamera.cpp" />
-    <ClCompile Include="Source\GPUParticleEmitter.cpp" />
-    <ClCompile Include="Source\GUIBar.cpp" />
-    <ClCompile Include="Source\LightingExample.cpp" />
+    <ClCompile Include="Source\gl_core_4_4.c" />
     <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\ParticleEffectExample.cpp" />
-    <ClCompile Include="Source\PostProcessingExample.cpp" />
-    <ClCompile Include="Source\ProceduralGenExample.cpp" />
-    <ClCompile Include="Source\ShadowMappingExample.cpp" />
-    <ClCompile Include="Source\TextureAnimationExample.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dep\aieutilities\Gizmos.h" />
+    <ClInclude Include="Header\AIBase.h" />
     <ClInclude Include="Header\Application.h" />
-    <ClInclude Include="Header\Scene3D.h" />
     <ClInclude Include="Header\BaseCamera.h" />
-    <ClInclude Include="Header\DeferredRenderingExample.h" />
+    <ClInclude Include="Header\CheckersApplication.h" />
+    <ClInclude Include="Header\CheckersBoard.h" />
     <ClInclude Include="Header\FlyCamera.h" />
     <ClInclude Include="Header\gl_core_4_4.h" />
-    <ClInclude Include="Header\GPUParticleEmitter.h" />
-    <ClInclude Include="Header\GUIBar.h" />
-    <ClInclude Include="Header\LightingExample.h" />
-    <ClInclude Include="Header\ParticleEffectExample.h" />
-    <ClInclude Include="Header\PostProcessingExample.h" />
-    <ClInclude Include="Header\ProceduralGenExample.h" />
-    <ClInclude Include="Header\ShadowMappingExample.h" />
-    <ClInclude Include="Header\TextureAnimationExample.h" />
-    <ClInclude Include="Header\Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,8 +1,8 @@
-#include "Scene3D.h"  //choose program to run
+#include "CheckersApplication.h"  //choose program to run
 
 int main()
 {
-	Scene3D app; // program to run
+	CheckersApplication app; // program to run
 
 	app.Run();
 

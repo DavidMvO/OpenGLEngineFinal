@@ -17,7 +17,7 @@ class BaseCamera;
 class Application
 {
 public:
-	Application(std::string appName, unsigned int uiWidth = 1920, unsigned int uiHeight = 1080);
+	Application(std::string appName, unsigned int uiWidth = 1720, unsigned int uiHeight = 1280);
 	~Application();
 
 	virtual bool StartUp() = 0;

@@ -27,37 +27,16 @@
     <ClCompile Include="Source\BaseCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GPUParticleEmitter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GUIBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Dep\aieutilities\Gizmos_fix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ParticleEffectExample.cpp">
+    <ClCompile Include="Source\CheckersApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ShadowMappingExample.cpp">
+    <ClCompile Include="Source\gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LightingExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TextureAnimationExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DeferredRenderingExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PostProcessingExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ProceduralGenExample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene3D.cpp">
+    <ClCompile Include="Source\CheckersBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,40 +53,16 @@
     <ClInclude Include="Header\BaseCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\GPUParticleEmitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\GUIBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Dep\aieutilities\Gizmos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\ParticleEffectExample.h">
+    <ClInclude Include="Header\CheckersApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\ShadowMappingExample.h">
+    <ClInclude Include="Header\CheckersBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\LightingExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\TextureAnimationExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\DeferredRenderingExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\PostProcessingExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\ProceduralGenExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Scene3D.h">
+    <ClInclude Include="Header\AIBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

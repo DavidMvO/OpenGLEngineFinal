@@ -119,7 +119,7 @@ void Application::SetUpCamera(FlyCamera* camera)
 	camera->SetInputWindow(m_window);
 
 	camera->SetupPerspective(glm::pi<float>() * 0.25f, 16.0f / 9.0f);
-	camera->LookAt(glm::vec3(10, 10, 10), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	camera->LookAt(glm::vec3(-20, 60, 100), glm::vec3(30, 0, 30), glm::vec3(0, 1, 0));
 
 	m_camera = camera;
 }

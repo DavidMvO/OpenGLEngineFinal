@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <GLFW/glfw3.h>
+
 BaseCamera::BaseCamera()
 : BaseCamera(glm::mat4(1))
 {
@@ -66,3 +68,21 @@ void BaseCamera::UpdateProjectionViewTransform()
 	m_viewTransform = glm::inverse(m_worldTransform);
 	m_projectionViewTransform = m_projectionTransform * m_viewTransform;
 }
+
+glm::vec3 BaseCamera::PickAgainstPlane(float x, float y, const glm::vec4& plane) const {
+
+	int width = 0, height = 0;
+	glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+
+	glm::vec3 screenPos(x / width * 2 - 1, (y / height * 2 - 1) * -1, -1);
+
+	screenPos.x /= m_projection[0][0];
+	screenPos.y /= m_projection[1][1];
+
+	glm::vec3 dir = glm::normalize(m_transform * glm::vec4(screenPos, 0)).xyz();
+
+	float d = (plane.w - glm::dot(m_transform[3].xyz(), plane.xyz()) / glm::dot(dir, plane.xyz()));
+
+	return m_transform[3].xyz() + dir * d;
+}
+
