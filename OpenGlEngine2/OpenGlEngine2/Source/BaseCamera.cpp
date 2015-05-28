@@ -76,13 +76,13 @@ glm::vec3 BaseCamera::PickAgainstPlane(float x, float y, const glm::vec4& plane)
 
 	glm::vec3 screenPos(x / width * 2 - 1, (y / height * 2 - 1) * -1, -1);
 
-	screenPos.x /= m_projection[0][0];
-	screenPos.y /= m_projection[1][1];
+	screenPos.x /= m_projectionTransform[0][0];
+	screenPos.y /= m_projectionTransform[1][1];
 
-	glm::vec3 dir = glm::normalize(m_transform * glm::vec4(screenPos, 0)).xyz();
+	glm::vec3 dir = glm::normalize(m_worldTransform * glm::vec4(screenPos, 0)).xyz();
 
-	float d = (plane.w - glm::dot(m_transform[3].xyz(), plane.xyz()) / glm::dot(dir, plane.xyz()));
+	float d = (plane.w - glm::dot(m_worldTransform[3].xyz(), plane.xyz()) / glm::dot(dir, plane.xyz()));
 
-	return m_transform[3].xyz() + dir * d;
+	return m_worldTransform[3].xyz() + dir * d;
 }
 

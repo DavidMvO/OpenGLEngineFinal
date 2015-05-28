@@ -6,11 +6,15 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <vector>
+#include <list>
 
 struct BoardPiece
 {
 	glm::vec3 position;
 	glm::vec4 colour;
+	glm::vec2 boardPosition;
+	bool selected;
+	bool available;
 
 };
 
@@ -40,7 +44,6 @@ public:
 
 	glm::vec3 GetBoardWorldPosition(int row, int column);
 
-private:
 
 	BoardPiece checkerBoard[8][8];
 	int tilewidth;
@@ -49,7 +52,11 @@ private:
 	std::vector<CheckerPiece> redPieces;
 	std::vector<CheckerPiece> blackPieces;
 
+	std::vector<BoardPiece> availableMoves;
+
 	int kingHeight;
+
+private:
 
 };
 

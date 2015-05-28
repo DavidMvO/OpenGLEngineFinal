@@ -37,7 +37,10 @@ public:
 	bool IsActionValid();
 
 	void PerformAction();
-
+	bool TileIsClicked(int row, int column);
+	bool TileHasPlayersPiece(int row, int column, State currentplayer);
+	bool TileHasOpponentsPiece(int row, int column, State currentplayer);
+	void GetAvailableMoves(int column, int row, State currentPlayer);
 	//clone current state
 	//virtual CheckersApplication* Clone() const = 0;
 

@@ -29,7 +29,6 @@ public:
 	//This will get changed to an Input Manager later
 	void SetInputWindow(GLFWwindow* pWindow) { m_pWindow = pWindow; }
 
-
 protected:
 	void HandleKeyboardInput(double dt);
 	void HandleMouseInput(double dt);
@@ -41,7 +40,6 @@ protected:
 	float m_fRotationSpeed;
 	bool m_bViewButtonClicked;
 	double m_dCursorX, m_dCursorY;
-
 };
 
 #endif

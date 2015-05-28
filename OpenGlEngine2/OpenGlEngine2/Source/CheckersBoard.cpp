@@ -13,7 +13,10 @@ CheckersBoard::CheckersBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		{
+			checkerBoard[i][j].selected == false;
+			checkerBoard[i][j].available == false;
 			checkerBoard[i][j].position = glm::vec3(0 + tilewidth*i, 0, 0 + tileheight*j);
+			checkerBoard[i][j].boardPosition = glm::vec2(i, j);
 			//for even y rows
 			//if x is odd make black
 			if ((j % 2) == 0 && (i % 2) != 0)
@@ -83,7 +86,12 @@ void CheckersBoard::UpdateBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			Gizmos::addAABB(checkerBoard[i][j].position, glm::vec3(tilewidth/2, 1, tileheight/2), checkerBoard[i][j].colour);
+			if (checkerBoard[i][j].selected == true)
+				checkerBoard[i][j].colour = glm::vec4(1, 1, 1, 1);
+			if (checkerBoard[i][j].available == true)
+				checkerBoard[i][j].colour = glm::vec4(0, 1, 0, 1);
+
+			Gizmos::addAABBFilled(checkerBoard[i][j].position, glm::vec3(tilewidth/2, 1, tileheight/2), checkerBoard[i][j].colour);
 		}
 	}
 
@@ -125,4 +133,9 @@ void CheckersBoard::Render()
 glm::vec3 CheckersBoard::GetBoardWorldPosition(int row, int column)
 {
 	return checkerBoard[row][column].position;
+}
+
+void GetAvailableMoves(int row, int column)
+{
+
 }
