@@ -53,6 +53,11 @@ private:
 
 	glm::vec3 m_clickPosition;
 
+	bool tileSelected;
+	BoardPiece* selectedTile;
+	CheckerPiece* selectedPiece;
+	BoardPiece* currentTile;
+
 };
 
 #endif

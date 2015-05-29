@@ -9,7 +9,8 @@ bool CheckersApplication::StartUp()
 
 	m_currentPlayer = PLAYER_ONE;
 	m_currentOpponent = PLAYER_TWO;
-	
+
+	tileSelected = false;	
 
 	return true;
 
@@ -45,13 +46,77 @@ bool CheckersApplication::Update(double dt)
 					{
 						for (int i = 0; i < 8; i++)
 						{
-							if (TileIsClicked(i, j))
+							//if you have not already selected a piece
+							if (TileIsClicked(i, j) && tileSelected == false)
 							{
-									m_board->checkerBoard[i][j].selected = TileHasPlayersPiece(i, j, GetCurrentGameState());
-									BoardPiece SelectedTile = m_board->checkerBoard[i][j];
+								currentTile = &m_board->checkerBoard[i][j];
+								//check clicked tile for a player piece
+								if (TileHasPlayersPiece(i, j, GetCurrentGameState()))
+								{
+									m_board->checkerBoard[i][j].selected = true;
+									m_board->checkerBoard[i][j].colour = glm::vec4(1, 1, 1, 1);
+									selectedTile = &m_board->checkerBoard[i][j];
+									tileSelected = true;
 
+									//if it has a player piece, get its avaliable moves
 									if (TileHasPlayersPiece(i, j, GetCurrentGameState()))
 										GetAvailableMoves(i, j, GetCurrentGameState());
+								}
+							}
+							//if you have already selected a piece
+							else if (TileIsClicked(i, j) && tileSelected == true)
+							{
+								currentTile = &m_board->checkerBoard[i][j];
+								//if clicked tile is the selected one, deselect it
+								if (selectedTile == &m_board->checkerBoard[i][j])
+								{
+									selectedTile->selected = false;
+									selectedTile->colour = glm::vec4(1, 0.25, 0.25, 1);
+									currentTile = nullptr;
+									for (int i = 0; i < 8; i++)
+									{
+										for (int j = 0; j < 8; j++)
+										{
+											m_board->checkerBoard[i][j].colour = m_board->checkerBoard[i][j].originalColour;
+											m_board->checkerBoard[i][j].available = false;
+										}
+									}
+									m_board->hasTilesSelected = false;
+									tileSelected = false;
+									m_board->availableMoves.clear();
+									break;
+								}
+								//if clicked tile is an available move
+								//find the piece on the selectedtile(white tile)
+								for (int p = 0; p < m_board->redPieces.size(); p++)
+								{
+									if (m_board->redPieces[p].boardPosition == selectedTile->boardPosition)
+									{
+										//check if available move
+										if (currentTile->available == true)
+										{
+											//move piece to currentTile(green)
+											m_board->redPieces[p].boardPosition = currentTile->boardPosition;
+											m_board->redPieces[p].position = currentTile->position;
+
+											selectedTile->selected = false;
+											selectedTile->colour = glm::vec4(1, 0.25, 0.25, 1);
+											currentTile = nullptr;
+											for (int i = 0; i < 8; i++)
+											{
+												for (int j = 0; j < 8; j++)
+												{
+													m_board->checkerBoard[i][j].colour = m_board->checkerBoard[i][j].originalColour;
+													m_board->checkerBoard[i][j].available = false;
+												}
+											}
+											m_board->hasTilesSelected = false;
+											tileSelected = false;
+											m_board->availableMoves.clear();
+											break;
+										}
+									}
+								}
 							}
 						}
 					}
@@ -168,27 +233,32 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 			{
 				for (int i = 0; i < 8; i++)
 				{
+					//if up and across.left is free
 					if (m_board->checkerBoard[i][j].boardPosition.y == row + 1 &&
 						m_board->checkerBoard[i][j].boardPosition.x == column + 1)
 					{
-						bool test = TileHasPlayersPiece(column + 1, row + 1, currentPlayer);
-						if (!test)
+						if (!TileHasPlayersPiece(column + 1, row + 1, currentPlayer))
 						{
-							m_board->availableMoves.push_back(m_board->checkerBoard[column + 1][row + 1]);
+							m_board->availableMoves.push_back(&m_board->checkerBoard[column + 1][row + 1]);
 							m_board->checkerBoard[column + 1][row + 1].available = true;
+							m_board->checkerBoard[column + 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
 						}
 					}
+					//if up and across.right is free
 					if (m_board->checkerBoard[i][j].boardPosition.y == row + 1 &&
 						m_board->checkerBoard[i][j].boardPosition.x == column - 1)
 					{
-						if (!TileHasPlayersPiece(column + 1, row + 1, currentPlayer))
+						if (!TileHasPlayersPiece(column - 1, row + 1, currentPlayer))
 						{
-							m_board->availableMoves.push_back(m_board->checkerBoard[column + 1][row + 1]);
+							m_board->availableMoves.push_back(&m_board->checkerBoard[column + 1][row + 1]);
 							m_board->checkerBoard[column - 1][row + 1].available = true;
+							m_board->checkerBoard[column - 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
 						}
 					}
+					//check for opponent pieces for jumps
 				}
 			}
+			m_board->hasTilesSelected = true;
 	}
 
 

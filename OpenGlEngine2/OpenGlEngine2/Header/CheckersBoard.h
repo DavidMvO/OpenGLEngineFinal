@@ -10,6 +10,7 @@
 
 struct BoardPiece
 {
+	glm::vec4 originalColour;
 	glm::vec3 position;
 	glm::vec4 colour;
 	glm::vec2 boardPosition;
@@ -20,7 +21,7 @@ struct BoardPiece
 
 struct CheckerPiece
 {
-	CheckerPiece(glm::vec3 piecePostion, glm::vec4 pieceColour, bool pieceIsKing, glm::vec2 pieceBoardPosition) 
+	CheckerPiece(glm::vec3 piecePostion, glm::vec4 pieceColour, bool pieceIsKing, glm::vec2 pieceBoardPosition)
 	{ position = piecePostion, colour = pieceColour, isKing = pieceIsKing; boardPosition = pieceBoardPosition; }
 
 	glm::vec3 position;
@@ -52,9 +53,11 @@ public:
 	std::vector<CheckerPiece> redPieces;
 	std::vector<CheckerPiece> blackPieces;
 
-	std::vector<BoardPiece> availableMoves;
+	std::vector<BoardPiece*> availableMoves;
 
 	int kingHeight;
+
+	bool hasTilesSelected;
 
 private:
 

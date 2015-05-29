@@ -8,6 +8,8 @@ CheckersBoard::CheckersBoard()
 
 	kingHeight = 0;
 
+	hasTilesSelected = false;
+
 	//j is y rows, i is x columns
 	for (int j = 0; j < 8; j++)
 	{
@@ -22,12 +24,14 @@ CheckersBoard::CheckersBoard()
 			if ((j % 2) == 0 && (i % 2) != 0)
 			{
 				checkerBoard[i][j].colour = glm::vec4(0.15, 0.15, 0.15, 1);
+				checkerBoard[i][j].originalColour = glm::vec4(0.15, 0.15, 0.15, 1);
 			}
 			//for even y rows
 			//if x is even make red
 			if ((j % 2) == 0 && (i % 2) == 0)
 			{
 				checkerBoard[i][j].colour = glm::vec4(1, 0.25, 0.25, 1);
+				checkerBoard[i][j].originalColour = glm::vec4(1, 0.25, 0.25, 1);
 				if (redPieces.size() < 12)
 				{
 					redPieces.push_back(CheckerPiece(GetBoardWorldPosition(i, j), glm::vec4(1, 0, 0, 1), false, glm::vec2(i, j)));
@@ -46,6 +50,7 @@ CheckersBoard::CheckersBoard()
 			if ((j % 2) != 0 && (i % 2) != 0)
 			{
 				checkerBoard[i][j].colour = glm::vec4(1, 0.25, 0.25, 1);
+				checkerBoard[i][j].originalColour = glm::vec4(1, 0.25, 0.25, 1);
 				if (redPieces.size() < 12)
 				{
 					redPieces.push_back(CheckerPiece(GetBoardWorldPosition(i, j), glm::vec4(1, 0, 0, 1), false, glm::vec2(i, j)));
@@ -63,6 +68,7 @@ CheckersBoard::CheckersBoard()
 			if ((j % 2) != 0 && (i % 2) == 0)
 			{
 				checkerBoard[i][j].colour = glm::vec4(0.15, 0.15, 0.15, 1);
+				checkerBoard[i][j].originalColour = glm::vec4(0.15, 0.15, 0.15, 1);
 			}
 		}
 	}
@@ -86,12 +92,15 @@ void CheckersBoard::UpdateBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			if (checkerBoard[i][j].selected == true)
-				checkerBoard[i][j].colour = glm::vec4(1, 1, 1, 1);
-			if (checkerBoard[i][j].available == true)
-				checkerBoard[i][j].colour = glm::vec4(0, 1, 0, 1);
+			//if (checkerBoard[i][j].selected == true)
+			//	checkerBoard[i][j].colour = glm::vec4(1, 1, 1, 1);
 
-			Gizmos::addAABBFilled(checkerBoard[i][j].position, glm::vec3(tilewidth/2, 1, tileheight/2), checkerBoard[i][j].colour);
+			//if (checkerBoard[i][j].available == true)
+			//	checkerBoard[i][j].colour = glm::vec4(0, 1, 0, 1);
+			if (hasTilesSelected)
+				Gizmos::addAABBFilled(checkerBoard[i][j].position, glm::vec3(tilewidth/2, 1, tileheight/2), checkerBoard[i][j].colour);
+			else if (!hasTilesSelected)
+				Gizmos::addAABBFilled(checkerBoard[i][j].position, glm::vec3(tilewidth / 2, 1, tileheight / 2), checkerBoard[i][j].originalColour);
 		}
 	}
 
@@ -133,9 +142,4 @@ void CheckersBoard::Render()
 glm::vec3 CheckersBoard::GetBoardWorldPosition(int row, int column)
 {
 	return checkerBoard[row][column].position;
-}
-
-void GetAvailableMoves(int row, int column)
-{
-
 }
