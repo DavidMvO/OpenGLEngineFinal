@@ -2,8 +2,8 @@
 #define CHECKERS_APPLICATION_H
 
 #include "Application.h"
-#include "AIBase.h"
 #include "CheckersBoard.h"
+#include "AIBase.h"
 
 class CheckersApplication : public Application
 {
@@ -33,20 +33,18 @@ public:
 	State GetCurrentOpponent() const { return m_currentOpponent; }
 
 	//get list of valid actions for current player
-	void GetValidActions();
+	void GetValidActions(std::vector<BoardPiece*> available);
 	bool IsActionValid();
+	CheckersBoard* GetBoard();
 
 	void PerformAction();
 	bool TileIsClicked(int row, int column);
-	bool TileHasPlayersPiece(int row, int column, State currentplayer);
-	bool TileHasOpponentsPiece(int row, int column, State currentplayer);
 	void GetAvailableMoves(int column, int row, State currentPlayer);
-	//clone current state
-	//virtual CheckersApplication* Clone() const = 0;
 
 private:
 
 	CheckersBoard* m_board;
+	AI* m_AI;
 
 	State m_currentPlayer;
 	State m_currentOpponent;
@@ -54,10 +52,11 @@ private:
 	glm::vec3 m_clickPosition;
 
 	bool tileSelected;
+	bool captureMove;
+	bool mandatoryMove;
 	BoardPiece* selectedTile;
 	CheckerPiece* selectedPiece;
 	BoardPiece* currentTile;
-
 };
 
 #endif

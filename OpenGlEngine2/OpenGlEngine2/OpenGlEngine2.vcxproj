@@ -85,6 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Dep\aieutilities\Gizmos_fix.cpp" />
+    <ClCompile Include="Source\AI.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\BaseCamera.cpp" />
     <ClCompile Include="Source\CheckersApplication.cpp" />

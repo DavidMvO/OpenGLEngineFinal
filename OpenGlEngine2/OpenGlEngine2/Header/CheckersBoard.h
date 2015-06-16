@@ -1,7 +1,6 @@
 #ifndef CHECKERS_BOARD_H
 #define CHECKERS_BOARD_H
 
-#include "Application.h"
 #include "Gizmos.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -52,8 +51,6 @@ public:
 
 	std::vector<CheckerPiece> redPieces;
 	std::vector<CheckerPiece> blackPieces;
-
-	std::vector<BoardPiece*> availableMoves;
 
 	int kingHeight;
 
