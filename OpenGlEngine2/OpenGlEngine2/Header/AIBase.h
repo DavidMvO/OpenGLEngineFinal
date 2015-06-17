@@ -242,7 +242,12 @@ public:
 			{
 				for (int i = 0; i < movesToCalculate.size(); i++)
 				{
-
+					//make a list of Move* called potential moves, put each of moves to calculate in that
+					//for each potential move, pick 4 random available moves, for each of these moves, add the score to the potential move score
+					//simulate a red move, deduct the red moves score from the potential move score
+					//simulate black and red till playouts reached
+					//find highest score in the potential move list
+					//feed the move to MakeMove fucntion
 				}
 
 
@@ -334,6 +339,7 @@ public:
 	std::vector<Move*> availableMoves;
 	std::vector<Move*> mandatoryMoves;
 	std::vector<Move*> nonMandatoryMoves;
+	std::vector<Move*> potentialMoves;
 
 private:
 
