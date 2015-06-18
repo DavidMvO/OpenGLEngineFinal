@@ -15,8 +15,8 @@ CheckersBoard::CheckersBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			checkerBoard[i][j].selected == false;
-			checkerBoard[i][j].available == false;
+			checkerBoard[i][j].selected = false;
+			checkerBoard[i][j].available = false;
 			checkerBoard[i][j].position = glm::vec3(0 + tilewidth*i, 0, 0 + tileheight*j);
 			checkerBoard[i][j].boardPosition = glm::vec2(i, j);
 			//for even y rows

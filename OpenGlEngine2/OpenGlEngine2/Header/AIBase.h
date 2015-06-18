@@ -8,6 +8,10 @@
 #include <list>
 #include <math.h>
 
+#include <thread>
+#include <mutex>
+
+#include <iostream>
 struct Move
 {
 	bool capture = nullptr;
@@ -34,9 +38,18 @@ public:
 		RED,
 		NONE,
 		OUTOFBOARD,
+		UNDEFINE,
 	};
 
-	AI(CheckersBoard* board, int PlayOuts, int SearchDepth) { m_board = board; playouts = PlayOuts; playoutsTotal = PlayOuts; searchDepth = SearchDepth; SearchDepthTotal = SearchDepth; pieceCaptured = false; };
+	AI(CheckersBoard* board, int PlayOuts, int SearchDepth) 
+	{ 
+		m_board = board;
+		playouts = PlayOuts; 
+		playoutsTotal = PlayOuts;
+		searchDepth = SearchDepth;
+		SearchDepthTotal = SearchDepth;
+		pieceCaptured = false; 
+	};
 	~AI() {};
 
 	//given the item to access from a list it moves the piece and removes any captures etc
@@ -67,22 +80,21 @@ public:
 			}
 		}
 		availableMoves.clear();
-			if (mandatoryMoves.size() > 0)
-				mandatoryMoves.clear();
-			if (nonMandatoryMoves.size() > 0)
-				nonMandatoryMoves.clear();
+		if (mandatoryMoves.size() > 0)
+			mandatoryMoves.clear();
+		if (nonMandatoryMoves.size() > 0)
+			nonMandatoryMoves.clear();
 
 		if (FinalMove == true && pieceCaptured == true)
 		{
 			bonusMove = true;
-			GetValidMovesForBlack(m_board->blackPieces);
-			CalculatePotentialMoves();
+			ConsecutiveMove(Moves[MoveToMake]->endingPieceBoardLocation.x, Moves[MoveToMake]->endingPieceBoardLocation.y, m_board->redPieces, m_board->blackPieces);
 			bonusMove = false;
 			//write better shit
 		}
 	}
 
-	void GetValidMovesForBlack(std::vector<CheckerPiece> PiecesToCheck)
+	void GetValidMovesForBlack(std::vector<CheckerPiece>& PiecesToCheck, std::vector<CheckerPiece>& otherPieces)
 	{
 		std::srand(std::time(0));
 		//loop through all pieces
@@ -92,7 +104,7 @@ public:
 		{
 			for (int column = 0; column < 8; column++)
 			{
-				if (TileHasOpponentsPiece(column, row))
+				if (TileHasOpponentsPiece(column, row, PiecesToCheck))
 				{
 					//---if piece is a king
 					for (int i = 0; i < PiecesToCheck.size(); i++)
@@ -101,9 +113,9 @@ public:
 						{
 							if (PiecesToCheck[i].isKing == true)
 							{
-								if (DownRight(column, row) == RED)
+								if (DownRight(column, row, otherPieces, PiecesToCheck) == RED)
 								{
-									if (DownRight(column + 1, row + 1) == NONE)
+									if (DownRight(column + 1, row + 1, otherPieces, PiecesToCheck) == NONE)
 									{
 										Move* n = new Move();
 										availableMoves.push_back(n);
@@ -115,9 +127,9 @@ public:
 										availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row + 2));
 									}
 								}
-								if (DownLeft(column, row) == RED)
+								if (DownLeft(column, row, otherPieces, PiecesToCheck) == RED)
 								{
-									if (DownLeft(column - 1, row + 1) == NONE)
+									if (DownLeft(column - 1, row + 1, otherPieces, PiecesToCheck) == NONE)
 									{
 										Move* n = new Move();
 										availableMoves.push_back(n);
@@ -129,7 +141,7 @@ public:
 										availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row + 2));
 									}
 								}
-								if (DownRight(column, row) == NONE)
+								if (DownRight(column, row, otherPieces, PiecesToCheck) == NONE)
 								{
 									Move* n = new Move();
 									availableMoves.push_back(n);
@@ -138,8 +150,9 @@ public:
 									availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
 									availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row + 1) * 10);
 									availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row + 1));
+
 								}
-								if (DownLeft(column, row) == NONE)
+								if (DownLeft(column, row, otherPieces, PiecesToCheck) == NONE)
 								{
 									Move* n = new Move();
 									availableMoves.push_back(n);
@@ -153,9 +166,9 @@ public:
 						}
 					}
 					//-----------then default checks for black, non kings and kings
-					if (UpRight(column, row) == RED)
+					if (UpRight(column, row, otherPieces, PiecesToCheck) == RED)
 					{
-						if (UpRight(column + 1, row - 1) == NONE)
+						if (UpRight(column + 1, row - 1, otherPieces, PiecesToCheck) == NONE)
 						{
 							Move* n = new Move();
 							availableMoves.push_back(n);
@@ -167,9 +180,9 @@ public:
 							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row - 2));
 						}
 					}
-					if (UpLeft(column, row) == RED)
+					if (UpLeft(column, row, otherPieces, PiecesToCheck) == RED)
 					{
-						if (UpLeft(column - 1, row - 1) == NONE)
+						if (UpLeft(column - 1, row - 1, otherPieces, PiecesToCheck) == NONE)
 						{
 							Move* n = new Move();
 							availableMoves.push_back(n);
@@ -181,7 +194,7 @@ public:
 							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row - 2));
 						}
 					}
-					if (UpRight(column, row) == NONE)
+					if (UpRight(column, row, otherPieces, PiecesToCheck) == NONE)
 					{
 						Move* n = new Move();
 						availableMoves.push_back(n);
@@ -191,7 +204,7 @@ public:
 						availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row - 1) * 10);
 						availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row - 1));
 					}
-					if (UpLeft(column, row) == NONE)
+					if (UpLeft(column, row, otherPieces, PiecesToCheck) == NONE)
 					{
 						Move* n = new Move();
 						availableMoves.push_back(n);
@@ -204,15 +217,22 @@ public:
 				}
 			}
 		}
+		for (int i = 0; i < availableMoves.size(); i++)
+		{
+			if (availableMoves[i]->capture == true)
+				mandatoryMoves.push_back(availableMoves[i]);
+		}
+		if (mandatoryMoves.size() > 0)
+			availableMoves = mandatoryMoves;
 	}
-	void SimulateRedTurn(Move* moveToModify, std::vector<CheckerPiece>& PiecesToCheck)
+	void SimulateRedTurn(std::vector<CheckerPiece>& PiecesToCheck, std::vector<CheckerPiece>& otherPieces)
 	{
 		//find all moves for red
 		for (int row = 0; row < 8; row++)
 		{
 			for (int column = 0; column < 8; column++)
 			{
-				if (TileHasPlayersPiece(column, row))
+				if (TileHasPlayersPiece(column, row, PiecesToCheck))
 				{
 					//---if piece is a king
 					for (int i = 0; i < PiecesToCheck.size(); i++)
@@ -221,9 +241,9 @@ public:
 						{
 							if (PiecesToCheck[i].isKing == true)
 							{
-								if (UpRight(column, row) == BLACK)
+								if (UpRight(column, row, PiecesToCheck, otherPieces) == BLACK)
 								{
-									if (UpRight(column + 1, row - 1) == NONE)
+									if (UpRight(column + 1, row - 1, PiecesToCheck, otherPieces) == NONE)
 									{
 										Move* n = new Move();
 										availableMoves.push_back(n);
@@ -235,9 +255,9 @@ public:
 										availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row - 2));
 									}
 								}
-								if (UpLeft(column, row) == BLACK)
+								if (UpLeft(column, row, PiecesToCheck, otherPieces) == BLACK)
 								{
-									if (UpLeft(column - 1, row - 1) == NONE)
+									if (UpLeft(column - 1, row - 1, PiecesToCheck, otherPieces) == NONE)
 									{
 										Move* n = new Move();
 										availableMoves.push_back(n);
@@ -249,7 +269,7 @@ public:
 										availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row - 2));
 									}
 								}
-								if (UpRight(column, row) == NONE)
+								if (UpRight(column, row, PiecesToCheck, otherPieces) == NONE)
 								{
 									Move* n = new Move();
 									availableMoves.push_back(n);
@@ -259,7 +279,7 @@ public:
 									availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row - 1) * 10);
 									availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row - 1));
 								}
-								if (UpLeft(column, row) == NONE)
+								if (UpLeft(column, row, PiecesToCheck, otherPieces) == NONE)
 								{
 									Move* n = new Move();
 									availableMoves.push_back(n);
@@ -273,9 +293,9 @@ public:
 						}
 					}
 					//-----------then default checks for red, non kings and kings
-					if (DownRight(column, row) == BLACK)
+					if (DownRight(column, row, PiecesToCheck, otherPieces) == BLACK)
 					{
-						if (DownRight(column + 1, row + 1) == NONE)
+						if (DownRight(column + 1, row + 1, PiecesToCheck, otherPieces) == NONE)
 						{
 							Move* n = new Move();
 							availableMoves.push_back(n);
@@ -287,9 +307,9 @@ public:
 							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row + 2));
 						}
 					}
-					if (DownLeft(column, row) == BLACK)
+					if (DownLeft(column, row, PiecesToCheck, otherPieces) == BLACK)
 					{
-						if (DownLeft(column - 1, row + 1) == NONE)
+						if (DownLeft(column - 1, row + 1, PiecesToCheck, otherPieces) == NONE)
 						{
 							Move* n = new Move();
 							availableMoves.push_back(n);
@@ -301,7 +321,7 @@ public:
 							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row + 2));
 						}
 					}
-					if (DownRight(column, row) == NONE)
+					if (DownRight(column, row, PiecesToCheck, otherPieces) == NONE)
 					{
 						Move* n = new Move();
 						availableMoves.push_back(n);
@@ -311,7 +331,7 @@ public:
 						availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row + 1) * 10);
 						availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row + 1));
 					}
-					if (DownLeft(column, row) == NONE)
+					if (DownLeft(column, row, PiecesToCheck, otherPieces) == NONE)
 					{
 						Move* n = new Move();
 						availableMoves.push_back(n);
@@ -324,71 +344,210 @@ public:
 				}
 			}
 		}
-
-
-		//find potential moves for red
-		if (availableMoves.size() != 0)
+		for (int i = 0; i < availableMoves.size(); i++)
 		{
-			for (int i = 0; i < availableMoves.size(); i++)
-			{
-				if (availableMoves[i]->capture == true)
-					mandatoryMoves.push_back(availableMoves[i]);
-			}
-			if (mandatoryMoves.size() > 0)
-			{
-				//choose a random mandatory move
-				int r = rand() % mandatoryMoves.size();
-				moveToModify->score -= mandatoryMoves[r]->score*15;
-				MakeMove(mandatoryMoves, r, redPieceSimulation, blackPieceSimulation, false);
-			}
-			else
-			{
-				//choose as many moves from availablemoves as there are playouts to add to the simulation
-				while (nonMandatoryMoves.size() < playouts)
-				{
-					int r = rand() % availableMoves.size();
-					nonMandatoryMoves.push_back(availableMoves[r]);
-				}
-				//choose a random non mandatory move
-				int r = rand() % nonMandatoryMoves.size();
-				moveToModify->score -= nonMandatoryMoves[r]->score*15;
-				MakeMove(nonMandatoryMoves, r, redPieceSimulation, blackPieceSimulation, false);
-			}
+			if (availableMoves[i]->capture == true)
+				mandatoryMoves.push_back(availableMoves[i]);
 		}
+		if (mandatoryMoves.size() > 0)
+			availableMoves = mandatoryMoves;
+
+
+		////find potential moves for red
+		//if (availableMoves.size() != 0)
+		//{
+		//	for (int i = 0; i < availableMoves.size(); i++)
+		//	{
+		//		if (availableMoves[i]->capture == true)
+		//			mandatoryMoves.push_back(availableMoves[i]);
+		//	}
+		//	if (mandatoryMoves.size() > 0)
+		//	{
+		//		//choose a random mandatory move
+		//		int r = rand() % mandatoryMoves.size();
+		//		moveToModify->score -= mandatoryMoves[r]->score*15;
+		//		MakeMove(mandatoryMoves, r, redPieceSimulation, blackPieceSimulation, false);
+		//	}
+		//	else
+		//	{
+		//		//choose as many moves from availablemoves as there are playouts to add to the simulation
+		//		while (nonMandatoryMoves.size() < playouts)
+		//		{
+		//			int r = rand() % availableMoves.size();
+		//			nonMandatoryMoves.push_back(availableMoves[r]);
+		//		}
+		//		//choose a random non mandatory move
+		//		int r = rand() % nonMandatoryMoves.size();
+		//		moveToModify->score -= nonMandatoryMoves[r]->score*15;
+		//		MakeMove(nonMandatoryMoves, r, redPieceSimulation, blackPieceSimulation, false);
+		//	}
+		//}
 	}
 
 	//out of all available moves, sort by priority and mandatory moves
 	void CalculatePotentialMoves()
 	{
-		//loop through available moves
-		//check for captures, captures must be in mandatory list
-		//if no mandatory moves
-		//pick moves = to playouts for simulation
-		if (availableMoves.size() != 0)
+		//---------------------OLD CALCULATE----------------------
+		////loop through available moves
+		////check for captures, captures must be in mandatory list
+		////if no mandatory moves
+		////pick moves = to playouts for simulation
+		//if (availableMoves.size() != 0)
+		//{
+		//	for (int i = 0; i < availableMoves.size(); i++)
+		//	{
+		//		if (availableMoves[i]->capture == true)
+		//			mandatoryMoves.push_back(availableMoves[i]);
+		//	}
+		//	if (mandatoryMoves.size() > 0)
+		//	{
+		//		FindBestMove(mandatoryMoves);
+		//	}
+		//	else
+		//	{
+		//		if (bonusMove == false)
+		//		{
+		//			//choose as many moves from availablemoves as there are playouts to add to the simulation, as long as it is not a bonus move
+		//			while (nonMandatoryMoves.size() < playouts)
+		//			{
+		//				int r = rand() % availableMoves.size();
+		//				nonMandatoryMoves.push_back(availableMoves[r]);
+		//			}
+		//			FindBestMove(nonMandatoryMoves);
+		//		}
+		//	}
+		//}
+		//--------------------------------------------------------------
+		//get a list of available actions
+		GetValidMovesForBlack(m_board->blackPieces, m_board->redPieces);
+		//save moves
+		potentialMoves = availableMoves;
+		for (int i = 0; i < potentialMoves.size(); i++)
 		{
-			for (int i = 0; i < availableMoves.size(); i++)
+			//for each potential move, set the score to 0
+			potentialMoves[i]->score = 0;
+			for (int j = 0; j < playouts; j++)
 			{
-				if (availableMoves[i]->capture == true)
-					mandatoryMoves.push_back(availableMoves[i]);
-			}
-			if (mandatoryMoves.size() > 0)
-			{
-				FindBestMove(mandatoryMoves);
-			}
-			else
-			{
-				if (bonusMove == false)
-				{
-					//choose as many moves from availablemoves as there are playouts to add to the simulation, as long as it is not a bonus move
-					while (nonMandatoryMoves.size() < playouts)
-					{
-						int r = rand() % availableMoves.size();
-						nonMandatoryMoves.push_back(availableMoves[r]);
-					}
-					FindBestMove(nonMandatoryMoves);
-				}
+				ThreadedSearch(i);
+				searchDepth = SearchDepthTotal;
+				//threads.push_back(std::thread(ThreadedSearch, &i));
+				//std::thread myThread(&ThreadedSearch, this, i);
+
+				//myThread.join();
+				//for (auto& thread : threads)
+				//	thread.join();
 			}
 		}
+		//pick highest scoring move
+
+		//mutexLock.lock();
+		int highestScore = 0;
+		bestMove = 0;
+		for (int i = 0; i < potentialMoves.size()-1; i++)
+		{
+			if (potentialMoves[i]->score >= highestScore)
+			{
+				highestScore = potentialMoves[i]->score;
+				bestMove = i;
+			}
+		}
+		MakeMove(potentialMoves, bestMove, m_board->blackPieces, m_board->redPieces, true);
+		potentialMoves.clear();
+		//mutexLock.unlock();
+		
+	}
+
+	void ThreadedSearch(int potentialMoveID)
+	{
+		//for each playout clone the game
+		CloneGame(m_board->redPieces, m_board->blackPieces);
+		//loop till game ends
+		while (blackPieceSimulation.size() > 0 && redPieceSimulation.size() > 0 && searchDepth > 0)
+		{
+			//as long as the game is not over
+			//std::cout << availableMoves.size();
+			//choose black turn
+			if (availableMoves.size() == 0)
+				GetValidMovesForBlack(blackPieceSimulation, redPieceSimulation);
+
+			if (availableMoves.size() != 0)
+			{
+				int r = rand() % availableMoves.size();
+				//add capture score
+				if (availableMoves[r]->capture == true)
+				{
+					for (int o = 0; o < blackPieceSimulation.size(); o++)
+					{
+						if (availableMoves[r]->capturePieceLocation == blackPieceSimulation[o].boardPosition)
+						{
+							if (blackPieceSimulation[o].isKing == true)
+								potentialMoves[potentialMoveID]->score += 15;
+						}
+					}
+					potentialMoves[potentialMoveID]->score += 1;
+				}
+
+				MakeMove(availableMoves, r, blackPieceSimulation, redPieceSimulation, false);
+			}
+			DisplayDebugArray();
+
+
+			for (int b = 0; b < blackPieceSimulation.size(); b++)
+			{
+				if (blackPieceSimulation[b].boardPosition.y == 0)
+					blackPieceSimulation[b].isKing = true;
+			}
+			if (redPieceSimulation.size() == 0)
+			{
+				break;
+			}
+			if (blackPieceSimulation.size() == 0)
+			{
+				break;
+			}
+
+			//make red turn
+			SimulateRedTurn(redPieceSimulation, blackPieceSimulation);
+			//std::cout << availableMoves.size();
+			if (availableMoves.size() != 0)
+			{
+				int k = rand() % availableMoves.size();
+				//deduct enemy capture score
+				if (availableMoves[k]->capture == true)
+				{
+					for (int o = 0; o < blackPieceSimulation.size(); o++)
+					{
+						if (availableMoves[k]->capturePieceLocation == blackPieceSimulation[o].boardPosition)
+						{
+							if (blackPieceSimulation[o].isKing == true)
+								potentialMoves[potentialMoveID]->score -= 15;
+						}
+					}
+					potentialMoves[potentialMoveID]->score -= 1;
+				}
+				MakeMove(availableMoves, k, redPieceSimulation, blackPieceSimulation, false);
+			}
+
+			DisplayDebugArray();
+
+			for (int p = 0; p < redPieceSimulation.size(); p++)
+			{
+				if (redPieceSimulation[p].boardPosition.y == 7)
+					redPieceSimulation[p].isKing = true;
+			}
+
+			//make black turn
+			GetValidMovesForBlack(blackPieceSimulation, redPieceSimulation);
+			searchDepth -= 1;
+		}
+
+		//add points for wins and deduct for losses
+		if (blackPieceSimulation.size() <= 0)
+			potentialMoves[potentialMoveID]->score += 50;
+		if (redPieceSimulation.size() <= 0)
+			potentialMoves[potentialMoveID]->score -= 50;
+
+		DeleteCloneGame();
 	}
 
 	void FindBestMove(std::vector<Move*> movesToCalculate)
@@ -441,9 +600,9 @@ public:
 		for (int i = 0; i < movesToCalculate.size(); i++)
 		{
 			MakeMove(movesToCalculate, i, blackPieceSimulation, redPieceSimulation, false);
-			SimulateRedTurn(potentialMoves[currentPotentialMove], redPieceSimulation); //will modify score
+			//SimulateRedTurn(potentialMoves[currentPotentialMove], redPieceSimulation); //will modify score
 			searchDepth -= 1;
-			GetValidMovesForBlack(blackPieceSimulation);
+			//GetValidMovesForBlack(blackPieceSimulation);
 
 			for (int i = 0; i < playouts; i++)
 			{
@@ -456,80 +615,278 @@ public:
 		}
 	}
 
-	void CloneGame(std::vector<CheckerPiece> currentRedPieces, std::vector<CheckerPiece> currentBlackPieces)
+	void CloneGame(std::vector<CheckerPiece>& currentRedPieces, std::vector<CheckerPiece>& currentBlackPieces)
 	{
 		redPieceSimulation = currentRedPieces;
 		blackPieceSimulation = currentBlackPieces;
 	}
 
+	void DeleteCloneGame()
+	{
+		redPieceSimulation.clear();
+		blackPieceSimulation.clear();
+	}
+
+	//getavailablemovesforblack
+	//for each move
+	//set moves value to 0
+	//PER PLAYOUT
+		//clone
+		//perform black
+		//perform red
+		//while game is not ended repeat
+		//capture a piece +1
+		//lose a piece -1
+		//win +50
+		//lose -50
+	//delete clone
+	//give move score
+
 	//v>
-	Piece DownRight(int column, int row)
+	Piece DownRight(int column, int row, std::vector<CheckerPiece>& redPieces, std::vector<CheckerPiece>& blackPieces)
 	{
 		if (column + 1 > 7 || row + 1 > 7)
 			return OUTOFBOARD;
-		if (TileHasPlayersPiece(column + 1, row + 1))
+		else if (TileHasPlayersPiece(column + 1, row + 1, redPieces))
 			return RED;
-		if (TileHasOpponentsPiece(column + 1, row + 1))
+		else if (TileHasOpponentsPiece(column + 1, row + 1, blackPieces))
 			return BLACK;
-		if (!TileHasPlayersPiece(column + 1, row + 1) && !TileHasOpponentsPiece(column + 1, row + 1))
+		else if (!TileHasPlayersPiece(column + 1, row + 1, redPieces) && !TileHasOpponentsPiece(column + 1, row + 1, blackPieces))
 			return NONE;
+		else
+		{
+			std::cout << "DownRight Failed";
+			return UNDEFINE;
+		}
 	}
 	//v<
-	Piece DownLeft(int column, int row)
+	Piece DownLeft(int column, int row, std::vector<CheckerPiece>& redPieces, std::vector<CheckerPiece>& blackPieces)
 	{
 		if (column - 1 < 0 || row + 1 > 7)
 			return OUTOFBOARD;
-		if (TileHasPlayersPiece(column - 1, row + 1))
+		else if (TileHasPlayersPiece(column - 1, row + 1, redPieces))
 			return RED;
-		if (TileHasOpponentsPiece(column - 1, row + 1))
+		else if (TileHasOpponentsPiece(column - 1, row + 1, blackPieces))
 			return BLACK;
-		if (!TileHasPlayersPiece(column - 1, row + 1) && !TileHasOpponentsPiece(column - 1, row + 1))
+		else if (!TileHasPlayersPiece(column - 1, row + 1, redPieces) && !TileHasOpponentsPiece(column - 1, row + 1, blackPieces))
 			return NONE;
+		else
+		{
+			std::cout << "DownLeft Failed";
+			return UNDEFINE;
+		}
 	}
 	//^>
-	Piece UpRight(int column, int row)
+	Piece UpRight(int column, int row, std::vector<CheckerPiece>& redPieces, std::vector<CheckerPiece>& blackPieces)
 	{
 		if (column + 1 > 7 || row - 1 < 0)
 			return OUTOFBOARD;
-		if (TileHasPlayersPiece(column + 1, row - 1))
+		else if (TileHasPlayersPiece(column + 1, row - 1, redPieces))
 			return RED;
-		if (TileHasOpponentsPiece(column + 1, row - 1))
+		else if (TileHasOpponentsPiece(column + 1, row - 1, blackPieces))
 			return BLACK;
-		if (!TileHasPlayersPiece(column + 1, row - 1) && !TileHasOpponentsPiece(column + 1, row - 1))
+		else if (!TileHasPlayersPiece(column + 1, row - 1, redPieces) && !TileHasOpponentsPiece(column + 1, row - 1, blackPieces))
 			return NONE;
+		else
+		{
+			std::cout << "UpRight Failed";
+			return UNDEFINE;
+		}
 	}
 	//^<
-	Piece UpLeft(int column, int row)
+	Piece UpLeft(int column, int row, std::vector<CheckerPiece>& redPieces, std::vector<CheckerPiece>& blackPieces)
 	{
 		if (column -1 < 0 || row -1 < 0)
 			return OUTOFBOARD;
-		if (TileHasPlayersPiece(column - 1, row - 1))
+		else if (TileHasPlayersPiece(column - 1, row - 1, redPieces))
 			return RED;
-		if (TileHasOpponentsPiece(column - 1, row - 1))
+		else if (TileHasOpponentsPiece(column - 1, row - 1, blackPieces))
 			return BLACK;
-		if (!TileHasPlayersPiece(column - 1, row - 1) && !TileHasOpponentsPiece(column - 1, row - 1))
+		else if (!TileHasPlayersPiece(column - 1, row - 1, redPieces) && !TileHasOpponentsPiece(column - 1, row - 1, blackPieces))
 			return NONE;
+		else
+		{
+			std::cout << "UpLeft Failed";
+			return UNDEFINE;
+		}
 	}
-	bool TileHasPlayersPiece(int column, int row)
+	bool TileHasPlayersPiece(int column, int row, std::vector<CheckerPiece>& redPieces)
 	{
 		// test player one
-		for (int i = 0; i < m_board->redPieces.size(); i++)
+		for (int i = 0; i < redPieces.size(); i++)
 		{
-			if (m_board->redPieces[i].boardPosition.x == column &&
-				m_board->redPieces[i].boardPosition.y == row)
+			if (redPieces[i].boardPosition.x == column &&
+				redPieces[i].boardPosition.y == row)
 				return true;
 		}
 		return false;
 	}
-	bool TileHasOpponentsPiece(int column, int row)
+	bool TileHasOpponentsPiece(int column, int row, std::vector<CheckerPiece>& blackPieces)
 	{
-		for (int i = 0; i < m_board->blackPieces.size(); i++)
+		for (int i = 0; i < blackPieces.size(); i++)
 		{
-			if (m_board->blackPieces[i].boardPosition.x == column &&
-				m_board->blackPieces[i].boardPosition.y == row)
+			if (blackPieces[i].boardPosition.x == column &&
+				blackPieces[i].boardPosition.y == row)
 				return true;
 		}
 		return false;
+	}
+
+	void ConsecutiveMove(int column, int row, std::vector<CheckerPiece>& redPieces, std::vector<CheckerPiece>& blackPieces)
+	{
+		for (int i = 0; i < blackPieces.size(); i++)
+		{
+			if (blackPieces[i].boardPosition == glm::vec2(column, row))
+			{
+				if (blackPieces[i].isKing == true)
+				{
+					if (DownRight(column, row, redPieces, blackPieces) == RED)
+					{
+						if (DownRight(column + 1, row + 1, redPieces, blackPieces) == NONE)
+						{
+							Move* n = new Move();
+							availableMoves.push_back(n);
+							availableMoves.back()->capture = true;
+							availableMoves.back()->score = 1;
+							availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+							availableMoves.back()->capturePieceLocation = glm::vec2(column + 1, row + 1);
+							availableMoves.back()->endingPieceLocation = glm::vec3((column + 2) * 10, 0, (row + 2) * 10);
+							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row + 2));
+						}
+					}
+					if (DownLeft(column, row, redPieces, blackPieces) == RED)
+					{
+						if (DownLeft(column - 1, row + 1, redPieces, blackPieces) == NONE)
+						{
+							Move* n = new Move();
+							availableMoves.push_back(n);
+							availableMoves.back()->capture = true;
+							availableMoves.back()->score = 1;
+							availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+							availableMoves.back()->capturePieceLocation = glm::vec2(column - 1, row + 1);
+							availableMoves.back()->endingPieceLocation = glm::vec3((column - 2) * 10, 0, (row + 2) * 10);
+							availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row + 2));
+						}
+					}
+					if (DownRight(column, row, redPieces, blackPieces) == NONE)
+					{
+						Move* n = new Move();
+						availableMoves.push_back(n);
+						availableMoves.back()->capture = false;
+						availableMoves.back()->score = 0;
+						availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+						availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row + 1) * 10);
+						availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row + 1));
+					}
+					if (DownLeft(column, row, redPieces, blackPieces) == NONE)
+					{
+						Move* n = new Move();
+						availableMoves.push_back(n);
+						availableMoves.back()->capture = false;
+						availableMoves.back()->score = 0;
+						availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+						availableMoves.back()->endingPieceLocation = glm::vec3((column - 1) * 10, 0, (row + 1) * 10);
+						availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 1), (row + 1));
+					}
+				}
+			}
+		}
+
+		//-----------then default checks for black, non kings and kings
+		if (UpRight(column, row, redPieces, blackPieces) == RED)
+		{
+			if (UpRight(column + 1, row - 1, redPieces, blackPieces) == NONE)
+			{
+				Move* n = new Move();
+				availableMoves.push_back(n);
+				availableMoves.back()->capture = true;
+				availableMoves.back()->score = 1;
+				availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+				availableMoves.back()->capturePieceLocation = glm::vec2(column + 1, row - 1);
+				availableMoves.back()->endingPieceLocation = glm::vec3((column + 2) * 10, 0, (row - 2) * 10);
+				availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 2), (row - 2));
+			}
+		}
+		if (UpLeft(column, row, redPieces, blackPieces) == RED)
+		{
+			if (UpLeft(column - 1, row - 1, redPieces, blackPieces) == NONE)
+			{
+				Move* n = new Move();
+				availableMoves.push_back(n);
+				availableMoves.back()->capture = true;
+				availableMoves.back()->score = 1;
+				availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+				availableMoves.back()->capturePieceLocation = glm::vec2(column - 1, row - 1);
+				availableMoves.back()->endingPieceLocation = glm::vec3((column - 2) * 10, 0, (row - 2) * 10);
+				availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 2), (row - 2));
+			}
+		}
+		if (UpRight(column, row, redPieces, blackPieces) == NONE)
+		{
+			Move* n = new Move();
+			availableMoves.push_back(n);
+			availableMoves.back()->capture = false;
+			availableMoves.back()->score = 0;
+			availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+			availableMoves.back()->endingPieceLocation = glm::vec3((column + 1) * 10, 0, (row - 1) * 10);
+			availableMoves.back()->endingPieceBoardLocation = glm::vec2((column + 1), (row - 1));
+		}
+		if (UpLeft(column, row, redPieces, blackPieces) == NONE)
+		{
+			Move* n = new Move();
+			availableMoves.push_back(n);
+			availableMoves.back()->capture = false;
+			availableMoves.back()->score = 0;
+			availableMoves.back()->startingPieceLocation = glm::vec2(column, row);
+			availableMoves.back()->endingPieceLocation = glm::vec3((column - 1) * 10, 0, (row - 1) * 10);
+			availableMoves.back()->endingPieceBoardLocation = glm::vec2((column - 1), (row - 1));
+		}
+
+		for (int i = 0; i < availableMoves.size(); i++)
+		{
+			if (availableMoves[i]->capture == true)
+				mandatoryMoves.push_back(availableMoves[i]);
+		}
+		if (mandatoryMoves.size() > 0)
+		{
+			availableMoves = mandatoryMoves;
+			int r = rand() % availableMoves.size();
+			MakeMove(availableMoves, r, m_board->blackPieces, m_board->redPieces, true);
+		}
+	}
+
+	void DisplayDebugArray()
+	{
+		for (int row = 0; row < 8; row++)
+		{
+			for (int column = 0; column < 8; column++)
+			{
+				DebugArray[column][row] = 0;
+				for (int r = 0; r < redPieceSimulation.size(); r++)
+				{
+					int x = redPieceSimulation[r].boardPosition.x;
+					int y = redPieceSimulation[r].boardPosition.y;
+					DebugArray[x][y] = 1;
+				}
+				for (int r = 0; r < blackPieceSimulation.size(); r++)
+				{
+					int x = blackPieceSimulation[r].boardPosition.x;
+					int y = blackPieceSimulation[r].boardPosition.y;
+					DebugArray[x][y] = 2;
+				}
+			}
+		}
+		for (int row = 0; row < 8; row++)
+		{
+			for (int column = 0; column < 8; column++)
+			{
+				std::cout << DebugArray[column][row] << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << std::endl;
 	}
 
 	std::vector <CaptureMove> possibleCaptures;
@@ -544,9 +901,14 @@ public:
 	bool finalMove = false;
 	bool bonusMove = false;
 
+	std::vector<std::thread> threads;
+	static std::mutex mutexLock;
+
 private:
 
 	CheckersBoard* m_board;
+
+	int DebugArray[8][8];
 
 	std::vector<CheckerPiece> redPieceSimulation;
 	std::vector<CheckerPiece> blackPieceSimulation;

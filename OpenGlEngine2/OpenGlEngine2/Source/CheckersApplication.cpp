@@ -6,7 +6,7 @@ bool CheckersApplication::StartUp()
 	SetUpCamera(pCamera);
 
 	m_board = new CheckersBoard();
-	m_AI = new AI(m_board, 5, 5);
+	m_AI = new AI(m_board, 10, 1);
 
 	m_currentPlayer = PLAYER_ONE;
 	m_currentOpponent = PLAYER_TWO;
@@ -55,14 +55,14 @@ bool CheckersApplication::Update(double dt)
 							{
 								currentTile = &m_board->checkerBoard[i][j];
 								//check clicked tile for a player piece
-								if (m_AI->TileHasPlayersPiece(i, j))
+								if (m_AI->TileHasPlayersPiece(i, j, m_board->redPieces))
 								{
 									m_board->checkerBoard[i][j].selected = true;
 									m_board->checkerBoard[i][j].colour = glm::vec4(1, 1, 1, 1);
 									selectedTile = &m_board->checkerBoard[i][j];
 									tileSelected = true;
 
-									if (m_AI->TileHasPlayersPiece(i, j))
+									if (m_AI->TileHasPlayersPiece(i, j, m_board->redPieces))
 										GetAvailableMoves(i, j, GetCurrentGameState());
 								}
 							}
@@ -130,6 +130,7 @@ bool CheckersApplication::Update(double dt)
 											}
 											m_board->hasTilesSelected = false;
 											tileSelected = false;
+											m_AI->possibleCaptures.clear();
 											PerformAction();
 											break;
 										}
@@ -145,9 +146,9 @@ bool CheckersApplication::Update(double dt)
 		}
 		else
 		{
-			m_AI->GetValidMovesForBlack(m_board->blackPieces);
+			//m_AI->GetValidMovesForBlack(m_board->blackPieces);
 			m_AI->CalculatePotentialMoves();
-				PerformAction();
+			PerformAction();
 		}
 
 	m_board->UpdateBoard();
@@ -225,9 +226,9 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 			{
 				if (m_board->redPieces[i].isKing == true)
 				{
-					if (m_AI->UpRight(column, row) == m_AI->BLACK)
+					if (m_AI->UpRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->BLACK)
 					{
-						if (m_AI->UpRight(column + 1, row - 1) == m_AI->NONE)
+						if (m_AI->UpRight(column + 1, row - 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 						{
 							m_board->checkerBoard[column + 2][row - 2].available = true;
 							m_board->checkerBoard[column + 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
@@ -237,9 +238,9 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 							m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column + 2) * 10, 0, (row - 2) * 10);
 						}
 					}
-					if (m_AI->UpLeft(column, row) == m_AI->BLACK)
+					if (m_AI->UpLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->BLACK)
 					{
-						if (m_AI->UpLeft(column - 1, row - 1) == m_AI->NONE)
+						if (m_AI->UpLeft(column - 1, row - 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 						{
 							m_board->checkerBoard[column - 2][row - 2].available = true;
 							m_board->checkerBoard[column - 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
@@ -249,12 +250,12 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 							m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column - 2) * 10, 0, (row - 2) * 10);
 						}
 					}
-					if (m_AI->UpRight(column, row) == m_AI->NONE)
+					if (m_AI->UpRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 					{
 						m_board->checkerBoard[column + 1][row - 1].available = true;
 						m_board->checkerBoard[column + 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
 					}
-					if (m_AI->UpLeft(column, row) == m_AI->NONE)
+					if (m_AI->UpLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 					{
 						m_board->checkerBoard[column - 1][row - 1].available = true;
 						m_board->checkerBoard[column - 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
@@ -263,9 +264,9 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 			}
 		}
 		//red player moves, non kings
-		if (m_AI->DownRight(column, row) == m_AI->BLACK)
+		if (m_AI->DownRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->BLACK)
 		{
-			if (m_AI->DownRight(column + 1, row + 1) == m_AI->NONE)
+			if (m_AI->DownRight(column + 1, row + 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 			{
 				m_board->checkerBoard[column + 2][row + 2].available = true;
 				m_board->checkerBoard[column + 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
@@ -275,9 +276,9 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 				m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column + 2) * 10, 0, (row + 2) * 10);
 			}
 		}
-		if (m_AI->DownLeft(column, row) == m_AI->BLACK)
+		if (m_AI->DownLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->BLACK)
 		{
-			if (m_AI->DownLeft(column - 1, row + 1) == m_AI->NONE)
+			if (m_AI->DownLeft(column - 1, row + 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 			{
 				m_board->checkerBoard[column - 2][row + 2].available = true;
 				m_board->checkerBoard[column - 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
@@ -287,12 +288,12 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 				m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column - 2) * 10, 0, (row + 2) * 10);
 			}
 		}
-		if (m_AI->DownRight(column, row) == m_AI->NONE)
+		if (m_AI->DownRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 		{
 			m_board->checkerBoard[column + 1][row + 1].available = true;
 			m_board->checkerBoard[column + 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
 		}
-		if (m_AI->DownLeft(column, row) == m_AI->NONE)
+		if (m_AI->DownLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 		{
 			m_board->checkerBoard[column - 1][row + 1].available = true;
 			m_board->checkerBoard[column - 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
