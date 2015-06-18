@@ -137,10 +137,7 @@ bool CheckersApplication::Update(double dt)
 								}
 							}
 						}
-					}
-					//if available move selected, 
-					//PerformAction();
-					 
+					} 
 				}
 			}
 			else
@@ -148,8 +145,9 @@ bool CheckersApplication::Update(double dt)
 		}
 		else
 		{
-			m_AI->GetValidMovesForBlack();
-			PerformAction();
+			m_AI->GetValidMovesForBlack(m_board->blackPieces);
+			m_AI->CalculatePotentialMoves();
+				PerformAction();
 		}
 
 	m_board->UpdateBoard();
@@ -180,7 +178,6 @@ bool CheckersApplication::IsActionValid()
 
 void CheckersApplication::PerformAction()
 {
-
 	// switch players around
 	m_currentPlayer = (m_currentPlayer == CheckersApplication::PLAYER_TWO) ? CheckersApplication::PLAYER_ONE : CheckersApplication::PLAYER_TWO;
 	m_currentOpponent = (m_currentOpponent == CheckersApplication::PLAYER_TWO) ? CheckersApplication::PLAYER_ONE : CheckersApplication::PLAYER_TWO;
@@ -221,8 +218,51 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 	// test player one
 	if (currentPlayer == CheckersApplication::PLAYER_ONE)
 	{
-		//if up and across.left is free
-		//check for mandatory moves first
+		//test for king
+		for (int i = 0; i < m_board->redPieces.size(); i++)
+		{
+			if (m_board->redPieces[i].boardPosition == glm::vec2(column, row))
+			{
+				if (m_board->redPieces[i].isKing == true)
+				{
+					if (m_AI->UpRight(column, row) == m_AI->BLACK)
+					{
+						if (m_AI->UpRight(column + 1, row - 1) == m_AI->NONE)
+						{
+							m_board->checkerBoard[column + 2][row - 2].available = true;
+							m_board->checkerBoard[column + 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
+							CaptureMove n;
+							m_AI->possibleCaptures.push_back(n);
+							m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column + 1, row - 1);
+							m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column + 2) * 10, 0, (row - 2) * 10);
+						}
+					}
+					if (m_AI->UpLeft(column, row) == m_AI->BLACK)
+					{
+						if (m_AI->UpLeft(column - 1, row - 1) == m_AI->NONE)
+						{
+							m_board->checkerBoard[column - 2][row - 2].available = true;
+							m_board->checkerBoard[column - 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
+							CaptureMove n;
+							m_AI->possibleCaptures.push_back(n);
+							m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column - 1, row - 1);
+							m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column - 2) * 10, 0, (row - 2) * 10);
+						}
+					}
+					if (m_AI->UpRight(column, row) == m_AI->NONE)
+					{
+						m_board->checkerBoard[column + 1][row - 1].available = true;
+						m_board->checkerBoard[column + 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
+					}
+					if (m_AI->UpLeft(column, row) == m_AI->NONE)
+					{
+						m_board->checkerBoard[column - 1][row - 1].available = true;
+						m_board->checkerBoard[column - 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
+					}
+				}
+			}
+		}
+		//red player moves, non kings
 		if (m_AI->DownRight(column, row) == m_AI->BLACK)
 		{
 			if (m_AI->DownRight(column + 1, row + 1) == m_AI->NONE)
@@ -235,8 +275,6 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 				m_AI->possibleCaptures.back().CaptureMoveLocation = glm::vec3((column + 2) * 10, 0, (row + 2) * 10);
 			}
 		}
-		//if up and across.right is free
-		//capture moves first
 		if (m_AI->DownLeft(column, row) == m_AI->BLACK)
 		{
 			if (m_AI->DownLeft(column - 1, row + 1) == m_AI->NONE)
