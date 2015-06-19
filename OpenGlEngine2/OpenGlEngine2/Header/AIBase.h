@@ -90,7 +90,6 @@ public:
 			bonusMove = true;
 			ConsecutiveMove(Moves[MoveToMake]->endingPieceBoardLocation.x, Moves[MoveToMake]->endingPieceBoardLocation.y, m_board->redPieces, m_board->blackPieces);
 			bonusMove = false;
-			//write better shit
 		}
 	}
 
@@ -387,37 +386,6 @@ public:
 	//out of all available moves, sort by priority and mandatory moves
 	void CalculatePotentialMoves()
 	{
-		//---------------------OLD CALCULATE----------------------
-		////loop through available moves
-		////check for captures, captures must be in mandatory list
-		////if no mandatory moves
-		////pick moves = to playouts for simulation
-		//if (availableMoves.size() != 0)
-		//{
-		//	for (int i = 0; i < availableMoves.size(); i++)
-		//	{
-		//		if (availableMoves[i]->capture == true)
-		//			mandatoryMoves.push_back(availableMoves[i]);
-		//	}
-		//	if (mandatoryMoves.size() > 0)
-		//	{
-		//		FindBestMove(mandatoryMoves);
-		//	}
-		//	else
-		//	{
-		//		if (bonusMove == false)
-		//		{
-		//			//choose as many moves from availablemoves as there are playouts to add to the simulation, as long as it is not a bonus move
-		//			while (nonMandatoryMoves.size() < playouts)
-		//			{
-		//				int r = rand() % availableMoves.size();
-		//				nonMandatoryMoves.push_back(availableMoves[r]);
-		//			}
-		//			FindBestMove(nonMandatoryMoves);
-		//		}
-		//	}
-		//}
-		//--------------------------------------------------------------
 		//get a list of available actions
 		GetValidMovesForBlack(m_board->blackPieces, m_board->redPieces);
 		//save moves
@@ -429,18 +397,10 @@ public:
 			for (int j = 0; j < playouts; j++)
 			{
 				ThreadedSearch(i);
-				searchDepth = SearchDepthTotal;
-				//threads.push_back(std::thread(ThreadedSearch, &i));
-				//std::thread myThread(&ThreadedSearch, this, i);
-
-				//myThread.join();
-				//for (auto& thread : threads)
-				//	thread.join();
 			}
 		}
 		//pick highest scoring move
 
-		//mutexLock.lock();
 		int highestScore = 0;
 		bestMove = 0;
 		for (int i = 0; i < potentialMoves.size()-1; i++)
@@ -453,8 +413,6 @@ public:
 		}
 		MakeMove(potentialMoves, bestMove, m_board->blackPieces, m_board->redPieces, true);
 		potentialMoves.clear();
-		//mutexLock.unlock();
-		
 	}
 
 	void ThreadedSearch(int potentialMoveID)
@@ -489,8 +447,7 @@ public:
 
 				MakeMove(availableMoves, r, blackPieceSimulation, redPieceSimulation, false);
 			}
-			DisplayDebugArray();
-
+			//DisplayDebugArray();
 
 			for (int b = 0; b < blackPieceSimulation.size(); b++)
 			{
@@ -520,15 +477,15 @@ public:
 						if (availableMoves[k]->capturePieceLocation == blackPieceSimulation[o].boardPosition)
 						{
 							if (blackPieceSimulation[o].isKing == true)
-								potentialMoves[potentialMoveID]->score -= 15;
+								potentialMoves[potentialMoveID]->score -= 20;
 						}
 					}
-					potentialMoves[potentialMoveID]->score -= 1;
+					potentialMoves[potentialMoveID]->score -= 2;
 				}
 				MakeMove(availableMoves, k, redPieceSimulation, blackPieceSimulation, false);
 			}
 
-			DisplayDebugArray();
+			//DisplayDebugArray();
 
 			for (int p = 0; p < redPieceSimulation.size(); p++)
 			{
@@ -538,7 +495,7 @@ public:
 
 			//make black turn
 			GetValidMovesForBlack(blackPieceSimulation, redPieceSimulation);
-			searchDepth -= 1;
+			//searchDepth -= 1;
 		}
 
 		//add points for wins and deduct for losses

@@ -6,7 +6,7 @@ bool CheckersApplication::StartUp()
 	SetUpCamera(pCamera);
 
 	m_board = new CheckersBoard();
-	m_AI = new AI(m_board, 10, 1);
+	m_AI = new AI(m_board, 5, 25);
 
 	m_currentPlayer = PLAYER_ONE;
 	m_currentOpponent = PLAYER_TWO;
@@ -44,7 +44,6 @@ bool CheckersApplication::Update(double dt)
 					double x = 0, y = 0;
 					glfwGetCursorPos(m_window, &x, &y);
 					m_clickPosition = m_camera->PickAgainstPlane((float)x, (float)y, glm::vec4(0, 1, 0, 0));
-					Gizmos::addDisk(m_clickPosition, 4, 20, glm::vec4(0, 1, 0, 1));
 					//get selected board tile
 					for (int j = 0; j < 8; j++)
 					{
@@ -92,17 +91,13 @@ bool CheckersApplication::Update(double dt)
 								//find the piece on the selectedtile(white tile)
 								for (int p = 0; p < m_board->redPieces.size(); p++)
 								{
+									GetAvailableMoves(m_board->redPieces[p].boardPosition.x, m_board->redPieces[p].boardPosition.y, GetCurrentGameState());
 									if (m_board->redPieces[p].boardPosition == selectedTile->boardPosition)
 									{
 										//check for mandatoryMove
 										//----
-										//check if available move
-										if (currentTile->available == true)
+										if (m_AI->possibleCaptures.size() > 0)
 										{
-											//move piece to currentTile(green)
-											m_board->redPieces[p].boardPosition = currentTile->boardPosition;
-											m_board->redPieces[p].position = currentTile->position;
-
 											for (int i = 0; i < m_AI->possibleCaptures.size(); i++)
 											{
 												if (currentTile->position == m_AI->possibleCaptures[i].CaptureMoveLocation)
@@ -111,11 +106,38 @@ bool CheckersApplication::Update(double dt)
 													{
 														if (m_board->blackPieces[j].boardPosition == m_AI->possibleCaptures[i].CapturedPieceLocation)
 														{
-															m_board->blackPieces.erase(m_board->blackPieces.begin()+j);
+															//move piece to currentTile(green)
+															m_board->redPieces[p].boardPosition = currentTile->boardPosition;
+															m_board->redPieces[p].position = currentTile->position;
+															m_board->blackPieces.erase(m_board->blackPieces.begin() + j);
+
+															selectedTile->selected = false;
+															selectedTile->colour = glm::vec4(1, 0.25, 0.25, 1);
+															currentTile = nullptr;
+															for (int i = 0; i < 8; i++)
+															{
+																for (int j = 0; j < 8; j++)
+																{
+																	m_board->checkerBoard[i][j].colour = m_board->checkerBoard[i][j].originalColour;
+																	m_board->checkerBoard[i][j].available = false;
+																}
+															}
+															m_board->hasTilesSelected = false;
+															tileSelected = false;
+															m_AI->possibleCaptures.clear();
+															PerformAction();
+															break;
 														}
 													}
 												}
 											}
+										}
+										//check if available move
+										else if (currentTile->available == true && m_AI->possibleCaptures.size() == 0)
+										{
+											//move piece to currentTile(green)
+											m_board->redPieces[p].boardPosition = currentTile->boardPosition;
+											m_board->redPieces[p].position = currentTile->position;
 
 											selectedTile->selected = false;
 											selectedTile->colour = glm::vec4(1, 0.25, 0.25, 1);
@@ -231,7 +253,7 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 						if (m_AI->UpRight(column + 1, row - 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 						{
 							m_board->checkerBoard[column + 2][row - 2].available = true;
-							m_board->checkerBoard[column + 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
+							//m_board->checkerBoard[column + 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
 							CaptureMove n;
 							m_AI->possibleCaptures.push_back(n);
 							m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column + 1, row - 1);
@@ -243,7 +265,7 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 						if (m_AI->UpLeft(column - 1, row - 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 						{
 							m_board->checkerBoard[column - 2][row - 2].available = true;
-							m_board->checkerBoard[column - 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
+							//m_board->checkerBoard[column - 2][row - 2].colour = glm::vec4(0, 1, 0, 1);
 							CaptureMove n;
 							m_AI->possibleCaptures.push_back(n);
 							m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column - 1, row - 1);
@@ -253,12 +275,12 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 					if (m_AI->UpRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 					{
 						m_board->checkerBoard[column + 1][row - 1].available = true;
-						m_board->checkerBoard[column + 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
+						//m_board->checkerBoard[column + 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
 					}
 					if (m_AI->UpLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 					{
 						m_board->checkerBoard[column - 1][row - 1].available = true;
-						m_board->checkerBoard[column - 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
+						//m_board->checkerBoard[column - 1][row - 1].colour = glm::vec4(0, 1, 0, 1);
 					}
 				}
 			}
@@ -269,7 +291,7 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 			if (m_AI->DownRight(column + 1, row + 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 			{
 				m_board->checkerBoard[column + 2][row + 2].available = true;
-				m_board->checkerBoard[column + 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
+				//m_board->checkerBoard[column + 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
 				CaptureMove n;
 				m_AI->possibleCaptures.push_back(n);
 				m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column + 1, row + 1);
@@ -281,7 +303,7 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 			if (m_AI->DownLeft(column - 1, row + 1, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 			{
 				m_board->checkerBoard[column - 2][row + 2].available = true;
-				m_board->checkerBoard[column - 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
+				//m_board->checkerBoard[column - 2][row + 2].colour = glm::vec4(0, 1, 0, 1);
 				CaptureMove n;
 				m_AI->possibleCaptures.push_back(n);
 				m_AI->possibleCaptures.back().CapturedPieceLocation = glm::vec2(column - 1, row + 1);
@@ -291,12 +313,12 @@ void CheckersApplication::GetAvailableMoves(int column, int row, State currentPl
 		if (m_AI->DownRight(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 		{
 			m_board->checkerBoard[column + 1][row + 1].available = true;
-			m_board->checkerBoard[column + 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
+			//m_board->checkerBoard[column + 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
 		}
 		if (m_AI->DownLeft(column, row, m_board->redPieces, m_board->blackPieces) == m_AI->NONE)
 		{
 			m_board->checkerBoard[column - 1][row + 1].available = true;
-			m_board->checkerBoard[column - 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
+			//m_board->checkerBoard[column - 1][row + 1].colour = glm::vec4(0, 1, 0, 1);
 		}
 		//check for opponent pieces for jumps
 		m_board->hasTilesSelected = true;
