@@ -57,6 +57,8 @@ private:
 	BoardPiece* selectedTile;
 	CheckerPiece* selectedPiece;
 	BoardPiece* currentTile;
+
+	bool GameOver = false;
 };
 
 #endif

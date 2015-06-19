@@ -396,6 +396,7 @@ public:
 			potentialMoves[i]->score = 0;
 			for (int j = 0; j < playouts; j++)
 			{
+				searchDepth = SearchDepthTotal;
 				ThreadedSearch(i);
 			}
 		}
@@ -495,7 +496,7 @@ public:
 
 			//make black turn
 			GetValidMovesForBlack(blackPieceSimulation, redPieceSimulation);
-			//searchDepth -= 1;
+			searchDepth -= 1;
 		}
 
 		//add points for wins and deduct for losses

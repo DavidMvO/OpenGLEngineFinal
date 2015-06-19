@@ -22,11 +22,15 @@ bool CheckersApplication::StartUp()
 
 void CheckersApplication::ShutDown()
 {
+	delete m_AI;
 	delete m_board;
 }
 
 bool CheckersApplication::Update(double dt)
 {
+	if (m_board->blackPieces.size() == 0 || m_board->redPieces.size() == 0)
+		GameOver = true;
+
 	// kepp track of if the mouse has been clicked
 	static bool moveMade = false;
 
@@ -125,6 +129,7 @@ bool CheckersApplication::Update(double dt)
 															m_board->hasTilesSelected = false;
 															tileSelected = false;
 															m_AI->possibleCaptures.clear();
+															m_AI->availableMoves.clear();
 															PerformAction();
 															break;
 														}
@@ -153,6 +158,7 @@ bool CheckersApplication::Update(double dt)
 											m_board->hasTilesSelected = false;
 											tileSelected = false;
 											m_AI->possibleCaptures.clear();
+											m_AI->availableMoves.clear();
 											PerformAction();
 											break;
 										}
@@ -168,9 +174,12 @@ bool CheckersApplication::Update(double dt)
 		}
 		else
 		{
-			//m_AI->GetValidMovesForBlack(m_board->blackPieces);
-			m_AI->CalculatePotentialMoves();
-			PerformAction();
+			if (GameOver != true)
+			{
+				//m_AI->GetValidMovesForBlack(m_board->blackPieces);
+				m_AI->CalculatePotentialMoves();
+				PerformAction();
+			}
 		}
 
 	m_board->UpdateBoard();
