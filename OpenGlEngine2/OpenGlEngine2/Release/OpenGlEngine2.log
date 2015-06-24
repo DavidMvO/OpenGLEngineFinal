@@ -1,7 +1,7 @@
-﻿Build started 19/06/2015 1:47:41 PM.
+﻿Build started 19/06/2015 2:41:51 PM.
      1>Project "C:\Users\david.van oss\Desktop\game-test\Checkers\OpenGLEngineFinal\OpenGlEngine2\OpenGlEngine2\OpenGlEngine2.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./Dep/fbx/include /I./Dep/glfw/include /I./Dep/glm /I./Dep/aieutilities /I./Dep/aieutilities/AntTweakBar/include /I./Source /I./Header /I"./Dep/aieutilities/stb-master" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _CONSOLE /D GLM_SWIZZLE /D GLM_FORCE_PURE /D _CRT_SECURE_NO_WARNINGS /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Source\CheckersApplication.cpp Source\Main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./Dep/fbx/include /I./Dep/glfw/include /I./Dep/glm /I./Dep/aieutilities /I./Dep/aieutilities/AntTweakBar/include /I./Source /I./Header /I"./Dep/aieutilities/stb-master" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _CONSOLE /D GLM_SWIZZLE /D GLM_FORCE_PURE /D _CRT_SECURE_NO_WARNINGS /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Source\CheckersApplication.cpp
          CheckersApplication.cpp
      1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(58): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(68): warning C4018: '<' : signed/unsigned mismatch
@@ -35,34 +35,6 @@
      1>Source\CheckersApplication.cpp(105): warning C4018: '<' : signed/unsigned mismatch
      1>Source\CheckersApplication.cpp(109): warning C4018: '<' : signed/unsigned mismatch
      1>Source\CheckersApplication.cpp(254): warning C4018: '<' : signed/unsigned mismatch
-         Main.cpp
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(58): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(68): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(91): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(98): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(109): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(219): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(237): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(346): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(393): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(407): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(438): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(453): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(476): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(491): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(522): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(534): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(558): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(674): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(684): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(695): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(803): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(823): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(825): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(826): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(829): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(831): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\david.van oss\desktop\game-test\checkers\openglenginefinal\openglengine2\openglengine2\header\AIBase.h(832): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\david.van oss\Desktop\game-test\Checkers\OpenGLEngineFinal\OpenGlEngine2\Release\OpenGlEngine2.exe" /INCREMENTAL /NOLOGO /LIBPATH:"./Dep/glfw/lib-vc2013" /LIBPATH:./Dep/fbx/lib /LIBPATH:./Dep/aieutilities/AntTweakBar/lib opengl32.lib glfw3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\david.van oss\Desktop\game-test\Checkers\OpenGLEngineFinal\OpenGlEngine2\Release\OpenGlEngine2.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\david.van oss\Desktop\game-test\Checkers\OpenGLEngineFinal\OpenGlEngine2\Release\OpenGlEngine2.lib" /MACHINE:X86 /SAFESEH Release\Gizmos_fix.obj
          Release\AI.obj
@@ -81,4 +53,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:09.61
+Time Elapsed 00:00:06.69
